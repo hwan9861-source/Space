@@ -1,0 +1,23 @@
+{
+  "name": "BG파동봇 Fold - 다우·엘리어트 기점 자동매매",
+  "short_name": "BG파동봇 Fold",
+  "description": "갤럭시 Z 폴드 SE 맞춤 다우 구조 & 엘리어트 기점 자동매매 및 4단계 본절 방어 앱",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
+  "orientation": "any",
+  "background_color": "#1c222b",
+  "theme_color": "#1c222b",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

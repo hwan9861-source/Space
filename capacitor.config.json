@@ -1,0 +1,17 @@
+{
+  "appId": "com.bgwavebot.foldse",
+  "appName": "BG파동봇 Fold",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#1c222b"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#1c222b",
+      "showSpinner": false
+    }
+  }
+}

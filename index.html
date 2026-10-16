@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BG파동봇 Fold">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1c222b" id="metaThemeColor">
+  <title>BG파동봇 - 갤럭시 폴드 SE 맞춤 다우·엘리어트 기점 자동매매 앱</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* =========================================================================
+       1. 눈이 편안한 로우-글레어(Low-Glare) 아이케어 컬러 시스템 (3종 테마 지원)
+       - 기본(sage): 차분한 웜 슬레이트 & 세이지 그린 (장시간 차트 응시 시 눈 피로 최소화)
+       - 야간(warmdark): 블루라이트 차단 웜 에스프레소 다크
+       - 주간(paper): 전자책(E-Ink) 스타일 웜 크림 페이퍼
+    ========================================================================= */
+    :root, body[data-theme="sage"] {
+      --bg-outer: #141920;
+      --bg-app: #1c222b;
+      --bg-card: #242c37;
+      --bg-elevated: #2d3746;
+      --bg-input: #171c24;
+      --chart-bg: #161b22;
+      --border: #364253;
+      --text-main: #e5ebf1;
+      --text-sub: #9badc0;
+      --cyan: #63b3ed;
+      --blue: #4a8fd9;
+      --green: #48bb78;
+      --red: #e57373;
+      --gold: #d6a33e;
+      --purple: #a389f4;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body[data-theme="warmdark"] {
+      --bg-outer: #141210;
+      --bg-app: #1c1917;
+      --bg-card: #26221e;
+      --bg-elevated: #322c27;
+      --bg-input: #161311;
+      --chart-bg: #171412;
+      --border: #3d352e;
+      --text-main: #ede4da;
+      --text-sub: #a89c90;
+      --cyan: #76a8c7;
+      --blue: #5d8aa8;
+      --green: #5ca87c;
+      --red: #d9776c;
+      --gold: #cfa04a;
+      --purple: #a688c9;
+    }
+
+    body[data-theme="paper"] {
+      --bg-outer: #e4dfd5;
+      --bg-app: #f3efe6;
+      --bg-card: #faf8f3;
+      --bg-elevated: #eae4d7;
+      --bg-input: #ffffff;
+      --chart-bg: #efeae0;
+      --border: #d5cfc2;
+      --text-main: #28313a;
+      --text-sub: #64707d;
+      --cyan: #2b6cb0;
+      --blue: #3178c6;
+      --green: #2f855a;
+      --red: #c53030;
+      --gold: #b7791f;
+      --purple: #6b46c1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", "Inter", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-outer);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    /* =========================================================================
+       2. 갤럭시 Z 폴드 SE (Galaxy Z Fold Special Edition) 반응형 레이아웃 엔진
+       - 펼침 메인 화면 (8.0인치 QXGA+ ~10:9 비율, 폭 620px~980px): 좌·우 2단 듀얼뷰(Dual-Pane)
+       - 접힘 커버 화면 (6.5인치 21:9 비율, 폭 ~430px): 한 손 조작 싱글뷰(Single-Pane)
+    ========================================================================= */
+    .mobile-shell {
+      width: 100%;
+      max-width: 960px;
+      min-height: 100dvh;
+      background-color: var(--bg-app);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      box-shadow: 0 0 40px rgba(0,0,0,0.35);
+      transition: max-width 0.25s ease;
+    }
+
+    .mobile-shell.layout-cover {
+      max-width: 430px;
+    }
+
+    .fold-dual-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    @media (max-width: 640px) {
+      .fold-dual-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mobile-shell.layout-cover .fold-dual-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* 상단 앱 바 */
+    .app-topbar {
+      padding: calc(var(--safe-top) + 10px) 16px 10px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-row1 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .symbol-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .app-badge-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    .symbol-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .perp-tag {
+      font-size: 11px;
+      background: rgba(99, 179, 237, 0.16);
+      color: var(--cyan);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      border: 1px solid rgba(99, 179, 237, 0.3);
+    }
+
+    .live-price-box {
+      text-align: right;
+    }
+
+    .live-price {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .live-change {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    /* 폴드 SE 화면 모드 & 눈편한 테마 툴바 */
+    .fold-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .chip-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .mini-chip {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .mini-chip.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #ffffff;
+    }
+
+    /* 단타 / 스윙 세그먼트 컨트롤 */
+    .mode-segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg-input);
+      padding: 3px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-sub);
+      padding: 7px 6px;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .seg-btn.active {
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    /* 스크롤 가능한 앱 본문 영역 */
+    .app-content {
+      flex: 1;
+      padding: 12px 14px calc(var(--safe-bottom) + 88px);
+      overflow-y: auto;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* 카드 공통 */
+    .m-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .m-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .m-card-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .pill-green  { background: rgba(72,187,120,0.16); color: var(--green); border: 1px solid rgba(72,187,120,0.35); }
+    .pill-red    { background: rgba(229,115,115,0.16); color: var(--red); border: 1px solid rgba(229,115,115,0.35); }
+    .pill-gold   { background: rgba(214,163,62,0.16); color: var(--gold); border: 1px solid rgba(214,163,62,0.35); }
+    .pill-cyan   { background: rgba(99,179,237,0.16); color: var(--cyan); border: 1px solid rgba(99,179,237,0.35); }
+    .pill-purple { background: rgba(163,137,244,0.16); color: var(--purple); border: 1px solid rgba(163,137,244,0.35); }
+
+    /* 상단 4칸 상태 요약 그리드 */
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .mini-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .mobile-shell.layout-cover .mini-stats {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .stat-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .stat-lbl {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .stat-val {
+      font-size: 14.5px;
+      font-weight: 800;
+    }
+
+    .stat-sub {
+      font-size: 10.5px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* 터치 파동 차트 */
+    .m-chart-wrap {
+      width: 100%;
+      height: 275px;
+      background: var(--chart-bg);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas#mobileWaveCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-ctrl-bar {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .m-btn {
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      padding: 10px 8px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.1s, opacity 0.15s;
+    }
+
+    .m-btn:active {
+      transform: scale(0.98);
+    }
+
+    .m-btn-green  { background: var(--green); border-color: var(--green); color: #ffffff; }
+    .m-btn-red    { background: var(--red); border-color: var(--red); color: #ffffff; }
+    .m-btn-blue   { background: var(--blue); border-color: var(--blue); color: #ffffff; }
+    .m-btn-gold   { background: var(--gold); border-color: var(--gold); color: #ffffff; }
+    .m-btn-purple { background: rgba(163,137,244,0.18); border-color: var(--purple); color: var(--purple); }
+
+    /* 수동 레버리지 & 진입 금액 조절 컨트롤 박스 */
+    .manual-ctrl-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .ctrl-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .range-slider {
+      width: 100%;
+      accent-color: var(--blue);
+      margin: 6px 0 8px;
+      cursor: pointer;
+    }
+
+    .preset-chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .preset-chip {
+      flex: 1;
+      min-width: 42px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      padding: 5px 4px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .preset-chip.active, .preset-chip:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(99, 179, 237, 0.12);
+    }
+
+    /* 원터치 긴급 액션 패드 */
+    .quick-action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* 기점 레벨 바 리스트 */
+    .m-level-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+      border-radius: 8px;
+      padding: 9px 11px;
+      margin-bottom: 7px;
+      font-size: 12px;
+    }
+
+    .mono { font-family: "SFMono-Regular", Consolas, monospace; }
+    .c-green  { color: var(--green); }
+    .c-red    { color: var(--red); }
+    .c-cyan   { color: var(--cyan); }
+    .c-gold   { color: var(--gold); }
+    .c-purple { color: var(--purple); }
+
+    /* 4단계 안전 방어 스텝퍼 */
+    .stepper-item {
+      display: flex;
+      gap: 10px;
+      padding-bottom: 12px;
+      position: relative;
+    }
+
+    .stepper-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .stepper-dot.done   { background: var(--green); color: #ffffff; }
+    .stepper-dot.active { background: var(--blue); color: #ffffff; }
+    .stepper-dot.wait   { background: var(--bg-elevated); color: var(--text-sub); border: 1px solid var(--border); }
+
+    /* 모바일 입력 스테퍼 */
+    .input-row {
+      margin-bottom: 10px;
+    }
+
+    .input-lbl {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+
+    .stepper-input-group {
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      gap: 6px;
+    }
+
+    .step-btn {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .m-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+      font-weight: 700;
+      outline: none;
+    }
+
+    /* 하단 고정 네이티브 탭 바 (6개 메뉴) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 960px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      padding: 6px 4px calc(var(--safe-bottom) + 6px);
+      z-index: 100;
+      transition: max-width 0.25s ease;
+    }
+
+    .mobile-shell.layout-cover .bottom-nav {
+      max-width: 430px;
+    }
+
+    .nav-item {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 4px 2px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-item .nav-ico {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .nav-item.active {
+      color: var(--cyan);
+      font-weight: 800;
+    }
+
+    /* 토스트 알림 팝업 */
+    .toast {
+      position: fixed;
+      top: calc(var(--safe-top) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-160%);
+      background: var(--green);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 800;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      transition: transform 0.25s ease;
+      z-index: 1100;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* 코드 프리뷰 박스 */
+    .code-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 11px;
+      color: var(--cyan);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 190px;
+      overflow-y: auto;
+      line-height: 1.5;
+    }
+
+    /* 갤럭시 폴드 SE 홈화면 바로가기 & 앱 설치 가이드 모달 */
+    .install-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 20, 0.78);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 1000;
+    }
+    .install-modal-backdrop.open {
+      display: flex;
+    }
+    .install-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--cyan);
+      border-radius: 16px;
+      max-width: 560px;
+      width: 100%;
+      max-height: 88dvh;
+      overflow-y: auto;
+      padding: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    }
+    .step-badge {
+      display: inline-block;
+      background: var(--blue);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}</style></head>
+<body data-theme="sage">
+
+  <!-- 상단 토스트 알림 -->
+  <div class="toast" id="mobileToast">💡 설치 안내 모달이 열렸습니다. 단독 파일 저장 또는 APK 빌더를 이용해 보세요.</div>
+
+  <!-- 갤럭시 폴드 SE 홈 화면 바로가기 & APK 설치 빠른 가이드 모달 -->
+  <div class="install-modal-backdrop" id="installModalBackdrop">
+    <div class="install-modal">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+        <div style="font-size:15px; font-weight:800; color:var(--cyan);">📲 갤럭시 폴드 SE 정식 앱(APK / PWA) 설치 가이드</div>
+        <button class="mini-chip" onclick="closeInstallModal()">✕ 닫기</button>
+      </div>
+
+      <div style="margin-bottom:12px; background:var(--bg-input); padding:12px; border-radius:10px; border:1px solid var(--border);">
+        <span class="step-badge" style="background:var(--green);">방법 1 (가장 빠름 · 10초 완성)</span>
+        <div style="font-size:13px; font-weight:800; margin:4px 0 6px;">단독 앱 파일(.html) 다운로드 후 갤럭시 [내 파일]에서 홈 화면 추가</div>
+        <div style="font-size:12px; color:var(--text-sub); line-height:1.65;">
+          ① 아래 <strong>[📥 단독 앱 파일(.html) 저장]</strong> 버튼을 눌러 기기에 저장합니다.<br>
+          ② 갤럭시 기본 앱인 <strong>[내 파일 (My Files)]</strong> → <strong>[다운로드]</strong> 폴더로 이동합니다.<br>
+          ③ 다운로드된 <code>BG파동봇_FoldSE_App.html</code> 파일을 <strong>1초간 길게 꾹 눌러 선택</strong>합니다.<br>
+          ④ 우측 하단 <strong>[더보기(⋮)] → [홈 화면에 추가]</strong>를 누르면 폴드 SE 바탕화면에 앱 아이콘이 생성됩니다!
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px; background:var(--bg-input); padding:12px; border-radius:10px; border:1px solid var(--border);">
+        <span class="step-badge" style="background:var(--purple);">방법 2 (주소창 없는 진짜 안드로이드 .APK 설치 파일 생성)</span>
+        <div style="font-size:13px; font-weight:800; margin:4px 0 6px;">PWABuilder / Capacitor로 정식 Android APK 패키징</div>
+        <div style="font-size:12px; color:var(--text-sub); line-height:1.65;">
+          ① 하단 메뉴의 <strong>[📲 앱제작·APK]</strong> 탭으로 이동합니다.<br>
+          ② 원클릭 버튼으로 <code>index.html</code>, <code>manifest.json</code>, <code>sw.js</code> 3개 파일을 내려받습니다.<br>
+          ③ 무료 호스팅(<strong>Netlify Drop</strong> 또는 <strong>Tiiny.host</strong>)에 올린 뒤 생성된 주소를 <strong>PWABuilder.com</strong>에 입력하면 <strong>갤럭시 폴드 SE 전용 `.apk` 설치 파일</strong>이 즉시 추출됩니다.
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <button class="m-btn m-btn-green" onclick="downloadStandaloneHtml()">📥 단독 앱 파일(.html) 저장</button>
+        <button class="m-btn m-btn-blue" onclick="closeInstallModal(); switchMobilePageById('page-apk');">🛠️ APK 빌더 탭으로 이동</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-shell" id="appShell">
+    <!-- 상단 앱 헤더 -->
+    <header class="app-topbar">
+      <div class="topbar-row1">
+        <div class="symbol-group">
+          <div class="app-badge-icon" id="appHeaderIcon">BG</div>
+          <div>
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              <span class="symbol-title" id="appHeaderTitle">BTCUSDT.P</span>
+              <span class="perp-tag" id="topLevTag">격리 10x · $500</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-sub);" id="topSubStatus">갤럭시 Z 폴드 SE 최적화 · 눈보호 세이지 테마</div>
+          </div>
+        </div>
+        <div class="live-price-box">
+          <div class="live-price" id="topLivePrice">$69,190.0</div>
+          <div class="live-change" id="topLiveWave">▲ 상승 3파 진행 중 (본절보호)</div>
+        </div>
+      </div>
+
+      <!-- 갤럭시 폴드 SE 화면비 전환 & 눈이 편안한 테마 선택 바 -->
+      <div class="fold-toolbar">
+        <div class="chip-group">
+          <span style="font-size:11px; color:var(--text-sub); font-weight:700;">📱 화면:</span>
+          <button class="mini-chip active" id="btnFoldAuto" onclick="setFoldLayout('unfolded')">폴드SE 펼침(8.0" 듀얼뷰)</button>
+          <button class="mini-chip" id="btnFoldCover" onclick="setFoldLayout('cover')">커버화면(6.5" 싱글뷰)</button>
+          <button class="mini-chip active" style="background:var(--green); border-color:var(--green);" onclick="openInstallModal()">📲 앱/APK 설치 가이드</button>
+        </div>
+        <div class="chip-group">
+          <span style="font-size:11px; color:var(--text-sub); font-weight:700;">👁️ 색상:</span>
+          <button class="mini-chip active" id="btnThemeSage" onclick="setEyeTheme('sage')">🌿 세이지(눈보호)</button>
+          <button class="mini-chip" id="btnThemeWarm" onclick="setEyeTheme('warmdark')">🌙 야간(블루라이트차단)</button>
+          <button class="mini-chip" id="btnThemePaper" onclick="setEyeTheme('paper')">☀️ 페이퍼(주간)</button>
+        </div>
+      </div>
+
+      <div class="mode-segmented">
+        <button class="seg-btn active" id="segScalp" onclick="setMobileMode('scalp')">⚡ 단타 (5m·15m / 1H필터)</button>
+        <button class="seg-btn" id="segSwing" onclick="setMobileMode('swing')">🌊 스윙 (1H·4H / 1D필터)</button>
+      </div>
+    </header>
+
+    <!-- 앱 본문 컨테이너 -->
+    <div class="app-content">
+
+      <!-- ===================================================================
+           페이지 1: 홈 · 갤럭시 폴드 SE 듀얼뷰 (차트 + 수동 배율·금액 조절 + 타점)
+      ==================================================================== -->
+      <div id="page-home" class="page">
+        <div class="mini-stats">
+          <div class="stat-box">
+            <div class="stat-lbl">현재 파동 기점 (W0 / W2)</div>
+            <div class="stat-val mono c-cyan" id="mStatOrigins">$66,200 / $67,250</div>
+            <div class="stat-sub">기점 이탈 시 즉시 짧은 손절</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">수동 레버리지 · 투입금액</div>
+            <div class="stat-val mono c-gold" id="mStatManualLevAmt">10x · $500 USDT</div>
+            <div class="stat-sub" id="mStatNotionalSub">총 포지션: $5,000 (0.0739 BTC)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">현재 스탑 방어 상태</div>
+            <div class="stat-val c-green" id="mStatDefense">본절 이동 완료</div>
+            <div class="stat-sub" id="mStatStopPrice">스탑가: $67,766.9 (무위험)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-lbl">기점 손절 / 완주 기대손익</div>
+            <div class="stat-val mono c-green" id="mStatExpPnl">-$75 / +$211</div>
+            <div class="stat-sub" id="mStatExpRoe">완주 기대 ROE: +42.2%</div>
+          </div>
+        </div>
+
+        <!-- 갤럭시 Z 폴드 SE 8.0인치 펼침 화면용 좌·우 2단 분할 그리드 -->
+        <div class="fold-dual-grid">
+          <!-- [좌측 패널] 파동 차트 + 수동 레버리지 배율 & 진입 금액 조절기 -->
+          <div>
+            <div class="m-card">
+              <div class="m-card-head">
+                <div class="m-card-title">📊 다우 구조 &amp; 엘리어트 기점 차트</div>
+                <div style="display:flex; gap:5px;">
+                  <button class="pill pill-green" style="cursor:pointer;" onclick="switchMobileScenario('bull')">롱 파동</button>
+                  <button class="pill pill-red" style="cursor:pointer;" onclick="switchMobileScenario('bear')">숏 파동</button>
+                </div>
+              </div>
+
+              <div class="m-chart-wrap">
+                <canvas id="mobileWaveCanvas" width="924" height="721"></canvas>
+              </div>
+
+              <div class="chart-ctrl-bar">
+                <button class="m-btn m-btn-green" id="btnMobPlay" onclick="toggleMobileSim()">▶ 파동 진행 재생</button>
+                <button class="m-btn" onclick="stepMobileSim()">⏭ +1캔들</button>
+                <button class="m-btn" onclick="resetMobileSim()">↺ 처음부터</button>
+              </div>
+            </div>
+
+            <!-- 레버리지 배율 & 진입 금액(USDT) 수동 조절 카드 -->
+            <div class="m-card">
+              <div class="m-card-head">
+                <div class="m-card-title">🎛️ 레버리지 배율 &amp; 진입 금액 수동 설정</div>
+                <span class="pill pill-cyan" id="manualOrderSummaryBadge">포지션 $5,000 (0.0739 BTC)</span>
+              </div>
+
+              <!-- 1. 레버리지 배율 수동 컨트롤 (1x ~ 125x) -->
+              <div class="manual-ctrl-box">
+                <div class="ctrl-header-row">
+                  <span><strong>레버리지 배율 (Leverage)</strong></span>
+                  <span class="mono c-cyan" style="font-weight:800; font-size:14px;" id="lblManualLev">격리 10x</span>
+                </div>
+                <div class="stepper-input-group">
+                  <button class="step-btn" onclick="adjustManualLeverage(-1)">-</button>
+                  <input type="number" class="m-input mono" id="mManualLev" value="10" min="1" max="125" oninput="syncManualLeverage(this.value)">
+                  <button class="step-btn" onclick="adjustManualLeverage(1)">+</button>
+                </div>
+                <input type="range" class="range-slider" id="mSliderLev" min="1" max="125" value="10" oninput="syncManualLeverage(this.value)">
+                <div class="preset-chips" id="levChips">
+                  <button class="preset-chip" onclick="syncManualLeverage(3)">3x</button>
+                  <button class="preset-chip" onclick="syncManualLeverage(5)">5x</button>
+                  <button class="preset-chip active" onclick="syncManualLeverage(10)">10x</button>
+                  <button class="preset-chip" onclick="syncManualLeverage(15)">15x</button>
+                  <button class="preset-chip" onclick="syncManualLeverage(20)">20x</button>
+                  <button class="preset-chip" onclick="syncManualLeverage(30)">30x</button>
+                  <button class="preset-chip" onclick="syncManualLeverage(50)">50x</button>
+                  <button class="preset-chip" onclick="syncManualLeverage(100)">100x</button>
+                </div>
+              </div>
+
+              <!-- 2. 진입 금액(투입 증거금 USDT) 수동 컨트롤 -->
+              <div class="manual-ctrl-box" style="margin-bottom:0;">
+                <div class="ctrl-header-row">
+                  <span><strong>진입 금액 / 투입 증거금 (USDT)</strong></span>
+                  <span class="mono c-gold" style="font-weight:800; font-size:14px;" id="lblManualAmt">$500 USDT</span>
+                </div>
+                <div class="stepper-input-group">
+                  <button class="step-btn" onclick="adjustManualAmount(-50)">-</button>
+                  <input type="number" class="m-input mono" id="mManualAmt" value="500" min="10" step="50" oninput="syncManualAmount(this.value)">
+                  <button class="step-btn" onclick="adjustManualAmount(50)">+</button>
+                </div>
+                <input type="range" class="range-slider" id="mSliderAmt" min="50" max="10000" step="50" value="500" oninput="syncManualAmount(this.value)">
+                <div class="preset-chips">
+                  <button class="preset-chip" onclick="syncManualAmount(100)">$100</button>
+                  <button class="preset-chip" onclick="syncManualAmount(300)">$300</button>
+                  <button class="preset-chip active" onclick="syncManualAmount(500)">$500</button>
+                  <button class="preset-chip" onclick="syncManualAmount(1000)">$1,000</button>
+                  <button class="preset-chip" onclick="syncManualAmount(2000)">$2,000</button>
+                  <button class="preset-chip" onclick="setAmountByEquityPct(25)">시드25%</button>
+                  <button class="preset-chip" onclick="setAmountByEquityPct(50)">시드50%</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- [우측 패널] 원터치 주문 패드 + 3단계 익절 & 기점 손절 가격표 -->
+          <div>
+            <!-- 원터치 긴급 컨트롤 패드 -->
+            <div class="m-card">
+              <div class="m-card-head">
+                <div class="m-card-title">⚡ 원터치 기점 주문 &amp; 본절 방어 실행</div>
+                <span class="pill pill-green" id="quickPadBadge">10x · $500 세팅됨</span>
+              </div>
+              <div class="quick-action-grid">
+                <button class="m-btn m-btn-green" onclick="fireQuickAction('OPEN_LONG')">🚀 기점 롱(Long) 진입</button>
+                <button class="m-btn m-btn-red" onclick="fireQuickAction('OPEN_SHORT')">🔻 기점 숏(Short) 진입</button>
+                <button class="m-btn m-btn-purple" onclick="fireQuickAction('BREAKEVEN')">🛡️ 즉시 본절+수수료 이동</button>
+                <button class="m-btn" onclick="fireQuickAction('PARTIAL_TP')">💰 현재가 50% 분할익절</button>
+              </div>
+            </div>
+
+            <!-- 타점 가격 및 수동 금액 기준 예상 수익·손실 요약 -->
+            <div class="m-card">
+              <div class="m-card-head">
+                <div class="m-card-title">🎯 현재 파동 3단계 익절 &amp; 기점 손절선</div>
+                <span class="pill pill-gold" id="mHomeRiskPill">손절 시 -$75.0</span>
+              </div>
+
+              <div class="m-level-row" style="border-left-color:var(--gold);">
+                <div>
+                  <strong>TP3 (30% 물량)</strong> · 2.618 확장 &amp; 트레일링
+                  <div style="font-size:11px; color:var(--text-sub);" id="mHomeTp3Pnl">예상 수익: +$104.5</div>
+                </div>
+                <strong class="mono c-gold" id="mHomeTp3">$72,380.5</strong>
+              </div>
+
+              <div class="m-level-row" style="border-left-color:var(--cyan);">
+                <div>
+                  <strong>TP2 (30% 물량)</strong> · 엘리어트 3파 1.618
+                  <div style="font-size:11px; color:var(--text-sub);" id="mHomeTp2Pnl">예상 수익: +$61.5</div>
+                </div>
+                <strong class="mono c-cyan" id="mHomeTp2">$70,441.4</strong>
+              </div>
+
+              <div class="m-level-row" style="border-left-color:var(--green);">
+                <div>
+                  <strong>TP1 (40% 물량)</strong> · 도달 시 자동 본절이동!
+                  <div style="font-size:11px; color:var(--text-sub);" id="mHomeTp1Pnl">확정 수익: +$45.0 확보</div>
+                </div>
+                <strong class="mono c-green" id="mHomeTp1">$69,187.9</strong>
+              </div>
+
+              <div class="m-level-row" style="border-left-color:var(--purple);">
+                <div>
+                  <strong>본절 스탑선 (Auto-Breakeven)</strong>
+                  <div style="font-size:11px; color:var(--text-sub);">TP1 체결 직후 손실 확률 0% 방어선</div>
+                </div>
+                <strong class="mono c-purple" id="mHomeBe">$67,766.9</strong>
+              </div>
+
+              <div class="m-level-row" style="border-left-color:var(--red); margin-bottom:0;">
+                <div>
+                  <strong>기점 손절가 (Origin Hard Stop)</strong>
+                  <div style="font-size:11px; color:var(--text-sub);" id="mHomeSlLoss">기점 이탈 시 손절: -$75.0 (-15.0%)</div>
+                </div>
+                <strong class="mono c-red" id="mHomeSl">$66,650.4</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           페이지 2: 포지션 · 4단계 무위험 본절 방어 현황
+      ==================================================================== -->
+      <div id="page-pos" class="page">
+        <div class="m-card">
+          <div class="m-card-head">
+            <div class="m-card-title">🔥 실시간 보유 포지션 (BTCUSDT.P)</div>
+            <span class="pill pill-green" id="posSideBadge">LONG · 격리 10x · $500</span>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:8px;">
+            <div>
+              <div style="font-size:11px; color:var(--text-sub);">수동 설정 기준 기대 수익 (ROE)</div>
+              <div class="mono c-green" style="font-size:22px; font-weight:900;" id="posPnlText">+$211.1 (+42.2%)</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:11px; color:var(--text-sub);">주문 수량 / 진입가</div>
+              <div class="mono" style="font-size:13px; font-weight:700;" id="posQtyEntryText">0.0739 BTC @ $67,665.4</div>
+            </div>
+          </div>
+
+          <div class="m-card-title" style="margin-bottom:12px;">🛡️ 4단계 안전 수익 잠금 프로세스</div>
+
+          <div class="stepper-item">
+            <div class="stepper-dot done">✓</div>
+            <div>
+              <div style="font-size:12.5px; font-weight:700;">1단계: 2파 골든존 기점 방어 진입 ($67,665.4)</div>
+              <div style="font-size:11px; color:var(--text-sub);">기점 손절가 $66,650.4 동시 등록 (짧은 손절 폭으로 리스크 엄격 제한)</div>
+            </div>
+          </div>
+
+          <div class="stepper-item">
+            <div class="stepper-dot done">✓</div>
+            <div>
+              <div style="font-size:12.5px; font-weight:700; color:var(--green);">2단계: TP1($69,187.9) 40% 익절 &amp; 본절 이동 완료!</div>
+              <div style="font-size:11px; color:var(--text-sub);">1차 수익 확정 후 잔여 60% 손절가를 $67,766.9(본절+수수료)로 이동해 손실 위험 0% 달성</div>
+            </div>
+          </div>
+
+          <div class="stepper-item">
+            <div class="stepper-dot active">3</div>
+            <div>
+              <div style="font-size:12.5px; font-weight:700; color:var(--cyan);">3단계: TP2($70,441.4) 엘리어트 3파 1.618 확장 대기</div>
+              <div style="font-size:11px; color:var(--text-sub);">체결 시 30% 추가 익절 및 스탑을 TP1($69,187.9) 위로 상향</div>
+            </div>
+          </div>
+
+          <div class="stepper-item" style="padding-bottom:0;">
+            <div class="stepper-dot wait">4</div>
+            <div>
+              <div style="font-size:12.5px; font-weight:700;">4단계: TP3($72,380.5) &amp; 샹들리에 ATR 트레일링</div>
+              <div style="font-size:11px; color:var(--text-sub);">최고점 대비 2.2 ATR 하락 또는 다우 저점 이탈 전까지 추세 끝까지 홀딩</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           페이지 3: 모바일 터치 기점 계산기 (수동 금액·배율 vs 자동 리스크 모드 겸용)
+      ==================================================================== -->
+      <div id="page-calc" class="page">
+        <div class="fold-dual-grid">
+          <div class="m-card">
+            <div class="m-card-head">
+              <div class="m-card-title">🎯 기점 가격 &amp; 수동 배율·금액 계산기</div>
+              <span class="pill pill-green" id="mCalcRuleBadge">✅ 되돌림 56.3% (유효)</span>
+            </div>
+
+            <div class="input-row">
+              <div class="input-lbl"><span>포지션 방향</span><span>파동 방향 선택</span></div>
+              <div class="mode-segmented">
+                <button class="seg-btn active" id="btnCalcLong" onclick="setCalcDir('long')">📈 상승 파동 (LONG)</button>
+                <button class="seg-btn" id="btnCalcShort" onclick="setCalcDir('short')">📉 하락 파동 (SHORT)</button>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="input-lbl"><span>수량 계산 기준 선택</span><span>수동 금액·배율 우선 적용</span></div>
+              <div class="mode-segmented">
+                <button class="seg-btn active" id="btnSizeManual" onclick="setSizingMode('manual')">🎛️ 수동 금액 × 레버리지</button>
+                <button class="seg-btn" id="btnSizeAuto" onclick="setSizingMode('auto')">🛡️ 손절 시 시드 N% 고정</button>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="input-lbl"><span>1파 시작 기점 가격 (W0 Origin, $)</span><span class="c-red">침범 시 무효선</span></div>
+              <div class="stepper-input-group">
+                <button class="step-btn" onclick="adjVal('mInW0', -100)">-</button>
+                <input type="number" class="m-input mono" id="mInW0" value="66200" oninput="calcMobileOrigin()">
+                <button class="step-btn" onclick="adjVal('mInW0', 100)">+</button>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="input-lbl"><span>1파 고점/저점 가격 (W1 BOS, $)</span><span class="c-cyan">다우 돌파 완성점</span></div>
+              <div class="stepper-input-group">
+                <button class="step-btn" onclick="adjVal('mInW1', -100)">-</button>
+                <input type="number" class="m-input mono" id="mInW1" value="68600" oninput="calcMobileOrigin()">
+                <button class="step-btn" onclick="adjVal('mInW1', 100)">+</button>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="input-lbl"><span>2파 조정 기점 가격 (W2 Pivot, $)</span><span class="c-gold">0.382~0.618 골든존</span></div>
+              <div class="stepper-input-group">
+                <button class="step-btn" onclick="adjVal('mInW2', -50)">-</button>
+                <input type="number" class="m-input mono" id="mInW2" value="67250" oninput="calcMobileOrigin()">
+                <button class="step-btn" onclick="adjVal('mInW2', 50)">+</button>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="input-lbl"><span>진입 가격 (Entry, $)</span><span>반등 캔들 종가</span></div>
+              <div class="stepper-input-group">
+                <button class="step-btn" onclick="adjVal('mInEntry', -50)">-</button>
+                <input type="number" class="m-input mono" id="mInEntry" value="67450" oninput="calcMobileOrigin()">
+                <button class="step-btn" onclick="adjVal('mInEntry', 50)">+</button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="input-row">
+                <div class="input-lbl"><span>계좌 총 시드 (USDT)</span></div>
+                <input type="number" class="m-input mono" id="mInEquity" value="10000" oninput="calcMobileOrigin()">
+              </div>
+              <div class="input-row">
+                <div class="input-lbl"><span>자동모드 시 허용손실(%)</span></div>
+                <input type="number" class="m-input mono" id="mInRisk" value="1.0" step="0.1" oninput="calcMobileOrigin()">
+              </div>
+            </div>
+          </div>
+
+          <div class="m-card" id="mCalcResultCard">
+        <div class="m-card-head">
+          <div class="m-card-title">📌 산출된 주문 세팅 (수동 금액·배율)</div>
+          <span class="pill pill-cyan">10x · 0.0741 BTC</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-sub); margin-bottom:10px; line-height:1.6;">
+          • 투입 증거금: <strong>$500.0 USDT</strong> (총 포지션 규모: <strong>$5000 USDT</strong>)<br>
+          • 기점 손절 시 예상 손실: <strong class="c-red">-$100.0 USDT</strong><br>
+          • 1~3차 완주 시 기대 수익: <strong class="c-green">+$277.2 USDT (+2.77R)</strong>
+        </div>
+        <div class="m-level-row" style="border-left-color:var(--gold);"><span>TP3 (30% · 2.618 확장)</span><strong class="mono c-gold">$73533.2</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--cyan);"><span>TP2 (30% · 1.618 확장)</span><strong class="mono c-cyan">$71133.2</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--green);"><span>TP1 (40% · 본절이동 트리거)</span><strong class="mono c-green">$69474.0</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--purple);"><span>본절 스탑선 (Breakeven)</span><strong class="mono c-purple">$67551.2</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--red);"><span>기점 손절가 (Origin SL)</span><strong class="mono c-red">$66100.7</strong></div>
+        <button class="m-btn m-btn-green" style="width:100%; margin-top:6px;" onclick="fireQuickAction('OPEN_LONG')">🚀 [10x · $500] 비트겟 주문 전송 (0.0741 BTC)</button>
+      </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           페이지 4: 비트겟 API & 트레이딩뷰 웹훅 설정
+      ==================================================================== -->
+      <div id="page-api" class="page">
+        <div class="fold-dual-grid">
+          <div class="m-card">
+            <div class="m-card-head">
+              <div class="m-card-title">🔑 비트겟 V2 API &amp; 웹훅 연동</div>
+              <span class="pill pill-cyan">기기 내 안전 저장</span>
+            </div>
+
+            <div class="input-row">
+              <div class="input-lbl"><span>Bitget API Key</span></div>
+              <input type="password" class="m-input mono" id="mApiKey" placeholder="bg_..." style="text-align:left; font-size:12px;">
+            </div>
+            <div class="input-row">
+              <div class="input-lbl"><span>Bitget Secret Key (HMAC-SHA256 서명용)</span></div>
+              <input type="password" class="m-input mono" id="mApiSecret" placeholder="Secret Key 입력" style="text-align:left; font-size:12px;">
+            </div>
+            <div class="input-row">
+              <div class="input-lbl"><span>API Passphrase</span></div>
+              <input type="password" class="m-input mono" id="mApiPass" placeholder="Passphrase 입력" style="text-align:left; font-size:12px;">
+            </div>
+
+            <div class="quick-action-grid" style="margin-top:10px;">
+              <button class="m-btn m-btn-blue" onclick="saveMobileApiKeys()">💾 기기에 키 저장</button>
+              <button class="m-btn m-btn-green" onclick="copyMobileWebhook()">📋 TV 웹훅 JSON 복사</button>
+            </div>
+          </div>
+
+          <div class="m-card">
+            <div class="m-card-head">
+              <div class="m-card-title">📡 TradingView 실시간 웹훅 페이로드 미리보기</div>
+              <span class="pill pill-gold" id="webhookPreviewBadge">10x · $500 (0.0739 BTC)</span>
+            </div>
+            <div class="code-box" id="webhookJsonPreview">{
+  "secret": "BITGET_SECRET_TOKEN_2026",
+  "exchange": "bitget_v2_mix",
+  "productType": "USDT-FUTURES",
+  "marginMode": "isolated",
+  "symbol": "BTCUSDT",
+  "strategyMode": "scalp",
+  "leverage": 10,
+  "marginUsdt": 500,
+  "action": "OPEN_LONG",
+  "entryPrice": 67665.4,
+  "originStopLoss": 66650.4,
+  "autoBreakevenTrigger": 69187.9,
+  "autoBreakevenStop": 67766.9,
+  "takeProfitTargets": [
+    {
+      "step": 1,
+      "price": 69187.9,
+      "ratioPct": 40
+    },
+    {
+      "step": 2,
+      "price": 70441.4,
+      "ratioPct": 30
+    },
+    {
+      "step": 3,
+      "price": 72380.5,
+      "ratioPct": 30
+    }
+  ],
+  "orderQtyBtc": 0.0739
+}</div>
+            <div style="font-size:11.5px; color:var(--text-sub); margin-top:8px; line-height:1.6;">
+              • 좌측 홈 탭에서 조절한 <strong>레버리지 배율</strong>과 <strong>투입 증거금(USDT)</strong>, 그리고 <strong>기점 손절가(Origin SL) + 3단계 분할익절(TP1~TP3)</strong>이 자동으로 JSON에 반영됩니다.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           페이지 5: 매매 성적표 & 알림음 테스트
+      ==================================================================== -->
+      <div id="page-log" class="page">
+        <div class="m-card">
+          <div class="m-card-head">
+            <div class="m-card-title">🔔 파동 기점 타점 포착 알림음 &amp; 로그</div>
+            <button class="pill pill-cyan" style="cursor:pointer;" onclick="playSignalSound()">🔊 알림음 테스트</button>
+          </div>
+          <div id="mLogList" style="font-size:11.5px; line-height:1.65; color:var(--text-sub); max-height:420px; overflow-y:auto;"><div style="padding: 6px 0px; border-bottom: 1px dashed var(--border);"><span class="mono" style="color:var(--cyan);">[04:47:56]</span> [앱 빌더 준비 완료] 하단 [📲 앱제작·APK] 탭에서 정식 앱 설치 파일 및 APK 패키지를 추출할 수 있습니다.</div><div style="padding: 6px 0px; border-bottom: 1px dashed var(--border);"><span class="mono" style="color:var(--cyan);">[04:47:56]</span> [수동 조절 활성] 레버리지 배율(1x~125x)과 투입 금액(USDT)을 자유롭게 조절할 수 있습니다.</div><div style="padding: 6px 0px; border-bottom: 1px dashed var(--border);"><span class="mono" style="color:var(--cyan);">[04:47:56]</span> [갤럭시 Z 폴드 SE 모드] 8.0인치 듀얼뷰 및 눈보호 세이지 컬러 테마가 활성화되었습니다.</div></div>
+        </div>
+      </div>
+
+      <!-- ===================================================================
+           ★ 신규 페이지 6: 모바일 앱 제작 & 안드로이드 APK 패키징 빌더 센터
+      ==================================================================== -->
+      <div id="page-apk" class="page active">
+        <div class="fold-dual-grid">
+          <!-- 좌측: 앱 아이콘·이름 커스텀 & 원클릭 패키지 파일 생성기 -->
+          <div>
+            <div class="m-card">
+              <div class="m-card-head">
+                <div class="m-card-title">🛠️ 갤럭시 폴드 SE 앱(PWA &amp; APK) 패키징 스튜디오</div>
+                <span class="pill pill-green">정식 앱 빌드 지원</span>
+              </div>
+
+              <div class="input-row">
+                <div class="input-lbl"><span>앱 이름 (스마트폰 홈 화면 표시명)</span><span>수정 시 즉시 반영</span></div>
+                <input type="text" class="m-input" id="apkAppName" value="BG파동봇 Fold" style="text-align:left;" oninput="updateAppBuilderConfig()">
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div class="input-row">
+                  <div class="input-lbl"><span>안드로이드 패키지 ID</span></div>
+                  <input type="text" class="m-input mono" id="apkPackageId" value="com.bgwavebot.foldse" style="font-size:12px;" oninput="updateAppBuilderConfig()">
+                </div>
+                <div class="input-row">
+                  <div class="input-lbl"><span>화면 방향 (폴드SE 폴더블 대응)</span></div>
+                  <select class="m-input" id="apkOrientation" onchange="updateAppBuilderConfig()" style="font-size:12px;">
+                    <option value="any">자동 회전 (펼침·커버 연속성)</option>
+                    <option value="portrait">세로 고정 (Portrait)</option>
+                    <option value="landscape">가로 고정 (Landscape)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- 앱 아이콘 프리뷰 & 1-Click 다운로드 버튼 그리드 -->
+              <div style="display:flex; align-items:center; gap:12px; background:var(--bg-input); padding:12px; border-radius:11px; border:1px solid var(--border); margin-bottom:12px;">
+                <canvas id="appIconCanvas" width="96" height="96" style="width:56px; height:56px; border-radius:14px; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.35);"></canvas>
+                <div style="flex:1;">
+                  <div style="font-size:13px; font-weight:800;" id="previewIconTitle">BG파동봇 Fold (com.bgwavebot.foldse)</div>
+                  <div style="font-size:11px; color:var(--text-sub); line-height:1.5;">
+                    갤럭시 Z 폴드 SE 8.0" 메인 디스플레이 &amp; 6.5" 커버 화면 자동 연속성(Continuity) 내장
+                  </div>
+                </div>
+                <button class="mini-chip active" onclick="downloadAppIconPng()">🖼️ 아이콘 PNG</button>
+              </div>
+
+              <div style="font-size:12px; font-weight:700; margin-bottom:8px; color:var(--cyan);">📦 1단계: 앱 구성 파일 원클릭 다운로드</div>
+              <div class="quick-action-grid" style="margin-bottom:8px;">
+                <button class="m-btn m-btn-green" onclick="downloadStandaloneHtml()">📥 1. index.html (단독 앱)</button>
+                <button class="m-btn m-btn-blue" onclick="downloadManifestJson()">📥 2. manifest.json (PWA)</button>
+                <button class="m-btn m-btn-purple" onclick="downloadServiceWorkerJs()">📥 3. sw.js (오프라인 엔진)</button>
+                <button class="m-btn m-btn-gold" onclick="downloadCapacitorConfig()">📥 4. capacitor.config.json</button>
+              </div>
+              <button class="m-btn" style="width:100%;" onclick="triggerPwaInstallPrompt()">🚀 현재 브라우저에서 즉시 홈 화면 앱 설치 호출</button>
+            </div>
+          </div>
+
+          <!-- 우측: 실제 안드로이드 .APK 설치 파일 생성 2가지 방법 & 설정 코드 프리뷰 -->
+          <div>
+            <div class="m-card">
+              <div class="m-card-head">
+                <div class="m-card-title">📲 실제 안드로이드 `.APK` 만드는 2가지 방법</div>
+                <span class="pill pill-purple">폴드 SE 완벽 호환</span>
+              </div>
+
+              <div style="background:var(--bg-input); border:1px solid var(--border); border-left:4px solid var(--green); border-radius:9px; padding:10px 12px; margin-bottom:10px; font-size:12px; line-height:1.65;">
+                <strong style="color:var(--green);">방법 A. 코딩 없이 1분 만에 `.APK` 추출 (PWABuilder 추천)</strong><br>
+                1) 좌측의 <code>index.html</code>, <code>manifest.json</code>, <code>sw.js</code>, <code>아이콘 PNG</code>를 한 폴더에 넣고 <strong>app.netlify.com/drop</strong>에 드래그 앤 드롭합니다.<br>
+                2) 생성된 <code>https://...</code> 주소를 <strong>PWABuilder.com</strong>에 붙여넣고 <strong>[Package for Stores] → [Android] → [Download APK]</strong>를 누르면 서명된 갤럭시 설치용 <code>.apk</code> 파일이 즉시 다운로드됩니다.
+              </div>
+
+              <div style="background:var(--bg-input); border:1px solid var(--border); border-left:4px solid var(--cyan); border-radius:9px; padding:10px 12px; margin-bottom:10px; font-size:12px; line-height:1.65;">
+                <strong style="color:var(--cyan);">방법 B. Capacitor CLI로 네이티브 Android Studio APK 빌드</strong><br>
+                아래 터미널 명령어를 복사해 실행하면 갤럭시 Z 폴드 SE의 폴더블 힌지 센서 및 백그라운드 알림을 지원하는 네이티브 APK가 빌드됩니다.
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <span style="font-size:11.5px; font-weight:700; color:var(--text-sub);">자동 생성된 Android APK 빌드 스크립트 &amp; Manifest</span>
+                <button class="mini-chip" onclick="copyBuilderCode()">📋 스크립트 복사</button>
+              </div>
+              <div class="code-box" id="apkBuilderCodeBox"># === [갤럭시 Z 폴드 SE 전용 Android APK 빌드 명령어] ===
+mkdir bg-wave-fold-app &amp;&amp; cd bg-wave-fold-app
+npm init -y
+npm install @capacitor/core @capacitor/cli @capacitor/android
+
+# www 폴더 생성 후 다운로드한 index.html, manifest.json, sw.js 이동
+mkdir www
+# (다운로드한 index.html 파일을 www/index.html 로 복사)
+
+npx cap add android
+npx cap sync android
+
+# Android Studio 열기 -&gt; Build &gt; Build Bundle(s) / APK(s) &gt; Build APK(s) 클릭!
+npx cap open android
+
+# === [manifest.json 미리보기] ===
+{
+  "name": "BG파동봇 Fold - 다우·엘리어트 기점 자동매매",
+  "short_name": "BG파동봇 Fold",
+  "description": "갤럭시 Z 폴드 SE 맞춤 다우 구조 &amp; 엘리어트 기점 자동매매 및 4단계 본절 방어 앱",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ],
+  "orientation": "any",
+  "background_color": "#1c222b",
+  "theme_color": "#1c222b",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 하단 고정 네이티브 앱 스타일 바텀 네비게이션 (6탭) -->
+    <nav class="bottom-nav">
+      <button class="nav-item" id="nav-page-home" onclick="switchMobilePage('page-home', this)">
+        <span class="nav-ico">📊</span>
+        <span>홈·차트</span>
+      </button>
+      <button class="nav-item" id="nav-page-pos" onclick="switchMobilePage('page-pos', this)">
+        <span class="nav-ico">🛡️</span>
+        <span>포지션·본절</span>
+      </button>
+      <button class="nav-item" id="nav-page-calc" onclick="switchMobilePage('page-calc', this)">
+        <span class="nav-ico">🎯</span>
+        <span>기점계산기</span>
+      </button>
+      <button class="nav-item" id="nav-page-api" onclick="switchMobilePage('page-api', this)">
+        <span class="nav-ico">🔑</span>
+        <span>비트겟연동</span>
+      </button>
+      <button class="nav-item" id="nav-page-log" onclick="switchMobilePage('page-log', this)">
+        <span class="nav-ico">🔔</span>
+        <span>일지·알림</span>
+      </button>
+      <button class="nav-item active" id="nav-page-apk" onclick="switchMobilePage('page-apk', this)">
+        <span class="nav-ico">📲</span>
+        <span>앱제작·APK</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 상태 변수 및 파동 시나리오 데이터
+    // =========================================================================
+    let mobMode = 'scalp';
+    let mobScenario = 'bull';
+    let mobCalcDir = 'long';
+    let mobSizingMode = 'manual'; // 'manual' (수동 금액·배율) 또는 'auto' (1% 리스크 자동)
+    let manualLeverage = 10;
+    let manualMarginUsdt = 500;
+    let currentTheme = 'sage';
+    let mobSimIdx = 20;
+    let mobTimer = null;
+
+    const mobData = {
+      bull: {
+        w0: 66200, w1: 68600, w2: 67250, entry: 67665.4, sl: 66650.4, be: 67766.9, tp1: 69187.9, tp2: 70441.4, tp3: 72380.5,
+        candles: [
+          {o:66800,h:66950,l:66500,c:66600}, {o:66600,h:66700,l:66200,c:66320, tag:"W0 기점"},
+          {o:66320,h:66850,l:66280,c:66790}, {o:66790,h:67300,l:66700,c:67220},
+          {o:67220,h:67850,l:67150,c:67780, tag:"BOS 돌파"}, {o:67780,h:68300,l:67700,c:68210},
+          {o:68210,h:68600,l:68100,c:68450, tag:"W1 고점"}, {o:68450,h:68500,l:67950,c:68020},
+          {o:68020,h:68120,l:67550,c:67620}, {o:67620,h:67700,l:67250,c:67340, tag:"W2 골든존"},
+          {o:67340,h:67720,l:67300,c:67665, tag:"LONG 진입"}, {o:67665,h:68150,l:67600,c:68090},
+          {o:68090,h:68680,l:68020,c:68590}, {o:68590,h:69250,l:68520,c:69190, tag:"TP1+본절이동"},
+          {o:69190,h:69300,l:68750,c:68920}, {o:68920,h:69850,l:68880,c:69780},
+          {o:69780,h:70520,l:69700,c:70450, tag:"TP2(1.618)"}, {o:70450,h:71200,l:70350,c:71120},
+          {o:71120,h:71850,l:71000,c:71740}, {o:71740,h:72450,l:71680,c:72390, tag:"TP3(2.618)"}
+        ]
+      },
+      bear: {
+        w0: 69600, w1: 67400, w2: 68650, entry: 68274.9, sl: 69069.5, be: 68172.5, tp1: 67082.9, tp2: 66208.8, tp3: 64937.4,
+        candles: [
+          {o:69100,h:69400,l:69000,c:69350}, {o:69350,h:69600,l:69150,c:69220, tag:"하락 W0"},
+          {o:69220,h:69300,l:68700,c:68780}, {o:68780,h:68850,l:68150,c:68220, tag:"하락 BOS"},
+          {o:68220,h:68300,l:67650,c:67720}, {o:67720,h:67800,l:67400,c:67510, tag:"하락 W1"},
+          {o:67510,h:68050,l:67480,c:67980}, {o:67980,h:68420,l:67900,c:68350},
+          {o:68350,h:68650,l:68250,c:68520, tag:"W2 반등기점"}, {o:68520,h:68580,l:68200,c:68275, tag:"SHORT 진입"},
+          {o:68275,h:68350,l:67750,c:67820}, {o:67820,h:67900,l:67320,c:67410},
+          {o:67410,h:67480,l:67020,c:67080, tag:"TP1+본절이동"}, {o:67080,h:67350,l:66950,c:67210},
+          {o:67210,h:67260,l:66550,c:66620}, {o:66620,h:66700,l:66150,c:66200, tag:"TP2(1.618)"},
+          {o:66200,h:66280,l:65650,c:65720}, {o:65720,h:65800,l:65200,c:65280},
+          {o:65280,h:65350,l:64880,c:64930, tag:"TP3(2.618)"}, {o:64930,h:65150,l:64800,c:65080}
+        ]
+      }
+    };
+
+    // PWA 설치 이벤트 캡처
+    let deferredPwaPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPwaPrompt = e;
+      showToast('📲 정식 앱 설치 준비 완료! [앱제작·APK] 탭에서 바로 설치 가능합니다.');
+    });
+
+    function openInstallModal() {
+      document.getElementById('installModalBackdrop').classList.add('open');
+    }
+
+    function closeInstallModal() {
+      document.getElementById('installModalBackdrop').classList.remove('open');
+    }
+
+    function triggerPwaInstallPrompt() {
+      if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        deferredPwaPrompt.userChoice.then(() => {
+          deferredPwaPrompt = null;
+        });
+      } else {
+        openInstallModal();
+        showToast('💡 설치 안내 모달이 열렸습니다. 단독 파일 저장 또는 APK 빌더를 이용해 보세요.');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('mobileToast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    // 갤럭시 Z 폴드 SE 화면비 전환 (8.0인치 펼침 듀얼뷰 vs 6.5인치 커버 싱글뷰)
+    function setFoldLayout(layoutMode) {
+      const shell = document.getElementById('appShell');
+      shell.classList.toggle('layout-cover', layoutMode === 'cover');
+      document.getElementById('btnFoldAuto').classList.toggle('active', layoutMode !== 'cover');
+      document.getElementById('btnFoldCover').classList.toggle('active', layoutMode === 'cover');
+      showToast(layoutMode === 'cover' ? '📱 폴드SE 커버화면(6.5" 싱글뷰) 적용' : '📖 폴드SE 펼침화면(8.0" 듀얼뷰) 적용');
+      setTimeout(renderMobileChart, 60);
+    }
+
+    // 눈이 편안한 3종 아이케어 컬러 테마 전환
+    function setEyeTheme(themeName) {
+      currentTheme = themeName;
+      document.body.setAttribute('data-theme', themeName);
+      document.getElementById('btnThemeSage').classList.toggle('active', themeName === 'sage');
+      document.getElementById('btnThemeWarm').classList.toggle('active', themeName === 'warmdark');
+      document.getElementById('btnThemePaper').classList.toggle('active', themeName === 'paper');
+      const names = { sage: '🌿 세이지 다크(눈보호)', warmdark: '🌙 야간 블루라이트 차단', paper: '☀️ 소프트 페이퍼(주간)' };
+      showToast(`👁️ 화면 색상: ${names[themeName]} 적용됨`);
+      renderMobileChart();
+      drawCustomAppIcon();
+    }
+
+    // 수동 레버리지 배율 조절 함수
+    function syncManualLeverage(val) {
+      let parsed = parseInt(val, 10);
+      if (isNaN(parsed) || parsed < 1) parsed = 1;
+      if (parsed > 125) parsed = 125;
+      manualLeverage = parsed;
+      document.getElementById('mManualLev').value = parsed;
+      document.getElementById('mSliderLev').value = parsed;
+      document.getElementById('lblManualLev').textContent = `격리 ${parsed}x`;
+      updateManualTradeSummary();
+      calcMobileOrigin();
+      updateWebhookPreview();
+    }
+
+    function adjustManualLeverage(delta) {
+      syncManualLeverage(manualLeverage + delta);
+    }
+
+    // 수동 진입 금액(투입 증거금 USDT) 조절 함수
+    function syncManualAmount(val) {
+      let parsed = parseFloat(val);
+      if (isNaN(parsed) || parsed < 10) parsed = 10;
+      manualMarginUsdt = parsed;
+      document.getElementById('mManualAmt').value = parsed;
+      document.getElementById('mSliderAmt').value = Math.min(10000, parsed);
+      document.getElementById('lblManualAmt').textContent = `$${parsed.toLocaleString()} USDT`;
+      updateManualTradeSummary();
+      calcMobileOrigin();
+      updateWebhookPreview();
+    }
+
+    function adjustManualAmount(delta) {
+      syncManualAmount(Math.max(10, manualMarginUsdt + delta));
+    }
+
+    function setAmountByEquityPct(pct) {
+      const eq = parseFloat(document.getElementById('mInEquity').value) || 10000;
+      syncManualAmount(Math.round((eq * pct) / 100));
+      showToast(`💰 계좌 시드의 ${pct}% ($${manualMarginUsdt.toLocaleString()} USDT) 투입 설정됨`);
+    }
+
+    function setSizingMode(mode) {
+      mobSizingMode = mode;
+      document.getElementById('btnSizeManual').classList.toggle('active', mode === 'manual');
+      document.getElementById('btnSizeAuto').classList.toggle('active', mode === 'auto');
+      calcMobileOrigin();
+    }
+
+    // 수동 배율·금액 변경 시 상단 태그, 홈 화면 손익, 포지션 탭 실시간 동기화
+    function updateManualTradeSummary() {
+      const d = mobData[mobScenario];
+      const notionalUsdt = manualMarginUsdt * manualLeverage;
+      const qtyBtc = notionalUsdt / d.entry;
+
+      const slLossUsdt = Math.abs(d.entry - d.sl) * qtyBtc;
+      const slLossRoe = (slLossUsdt / manualMarginUsdt) * 100;
+
+      const tp1Profit = Math.abs(d.tp1 - d.entry) * (qtyBtc * 0.40);
+      const tp2Profit = Math.abs(d.tp2 - d.entry) * (qtyBtc * 0.30);
+      const tp3Profit = Math.abs(d.tp3 - d.entry) * (qtyBtc * 0.30);
+      const totalProfit = tp1Profit + tp2Profit + tp3Profit;
+      const totalRoe = (totalProfit / manualMarginUsdt) * 100;
+
+      document.getElementById('topLevTag').textContent = `격리 ${manualLeverage}x · $${manualMarginUsdt.toLocaleString()}`;
+      document.getElementById('mStatManualLevAmt').textContent = `${manualLeverage}x · $${manualMarginUsdt.toLocaleString()} USDT`;
+      document.getElementById('mStatNotionalSub').textContent = `총 포지션: $${notionalUsdt.toLocaleString()} (${qtyBtc.toFixed(4)} BTC)`;
+      document.getElementById('mStatExpPnl').textContent = `-$${slLossUsdt.toFixed(0)} / +$${totalProfit.toFixed(0)}`;
+      document.getElementById('mStatExpRoe').textContent = `완주 기대 ROE: +${totalRoe.toFixed(1)}%`;
+
+      document.getElementById('manualOrderSummaryBadge').textContent = `포지션 $${notionalUsdt.toLocaleString()} (${qtyBtc.toFixed(4)} BTC)`;
+      document.getElementById('quickPadBadge').textContent = `${manualLeverage}x · $${manualMarginUsdt.toLocaleString()} 세팅됨`;
+      document.getElementById('mHomeRiskPill').textContent = `손절 시 -$${slLossUsdt.toFixed(1)}`;
+
+      document.getElementById('mHomeTp3Pnl').textContent = `예상 수익: +$${tp3Profit.toFixed(1)}`;
+      document.getElementById('mHomeTp2Pnl').textContent = `예상 수익: +$${tp2Profit.toFixed(1)}`;
+      document.getElementById('mHomeTp1Pnl').textContent = `확정 수익: +$${tp1Profit.toFixed(1)} 확보`;
+      document.getElementById('mHomeSlLoss').textContent = `기점 이탈 시 손절: -$${slLossUsdt.toFixed(1)} (-${slLossRoe.toFixed(1)}%)`;
+
+      document.getElementById('posSideBadge').textContent = `${mobScenario === 'bull' ? 'LONG' : 'SHORT'} · 격리 ${manualLeverage}x · $${manualMarginUsdt.toLocaleString()}`;
+      document.getElementById('posPnlText').textContent = `+$${totalProfit.toFixed(1)} (+${totalRoe.toFixed(1)}%)`;
+      document.getElementById('posQtyEntryText').textContent = `${qtyBtc.toFixed(4)} BTC @ $${d.entry.toLocaleString()}`;
+    }
+
+    function switchMobilePage(pageId, btnEl) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      if (btnEl) btnEl.classList.add('active');
+      if (pageId === 'page-home') renderMobileChart();
+      if (pageId === 'page-api') updateWebhookPreview();
+      if (pageId === 'page-apk') {
+        drawCustomAppIcon();
+        updateAppBuilderConfig();
+      }
+    }
+
+    function switchMobilePageById(pageId) {
+      const btn = document.getElementById('nav-' + pageId);
+      switchMobilePage(pageId, btn);
+    }
+
+    function setMobileMode(mode) {
+      mobMode = mode;
+      document.getElementById('segScalp').classList.toggle('active', mode === 'scalp');
+      document.getElementById('segSwing').classList.toggle('active', mode === 'swing');
+      document.getElementById('topSubStatus').textContent = mode === 'scalp'
+        ? '단타(5m/15m) · 피봇 L4/R2 · 수동 배율·금액 활성'
+        : '스윙(1H/4H) · 피봇 L8/R3 · 수동 배율·금액 활성';
+      showToast(mode === 'scalp' ? '⚡ 단타(Scalp) 파동 피봇 적용 (배율·금액은 수동 유지)' : '🌊 스윙(Swing) 파동 피봇 적용 (배율·금액은 수동 유지)');
+      logMobEvent(`[모드 전환] ${mode.toUpperCase()} 모드로 전환됨 (수동 레버리지 ${manualLeverage}x, 투입금 $${manualMarginUsdt} 유지)`);
+      renderMobileChart();
+      updateWebhookPreview();
+    }
+
+    function switchMobileScenario(scen) {
+      mobScenario = scen;
+      const d = mobData[scen];
+      mobSimIdx = d.candles.length;
+      document.getElementById('mStatOrigins').textContent = `$${d.w0.toLocaleString()} / $${d.w2.toLocaleString()}`;
+      document.getElementById('mHomeTp3').textContent = '$' + d.tp3.toLocaleString();
+      document.getElementById('mHomeTp2').textContent = '$' + d.tp2.toLocaleString();
+      document.getElementById('mHomeTp1').textContent = '$' + d.tp1.toLocaleString();
+      document.getElementById('mHomeBe').textContent  = '$' + d.be.toLocaleString();
+      document.getElementById('mHomeSl').textContent  = '$' + d.sl.toLocaleString();
+      updateManualTradeSummary();
+      updateWebhookPreview();
+      showToast(scen === 'bull' ? '📈 상승 1-2-3 파동 로드됨' : '📉 하락 1-2-3 파동 로드됨');
+      renderMobileChart();
+    }
+
+    // =========================================================================
+    // HTML5 캔버스 다우·엘리어트 파동 차트 렌더링
+    // =========================================================================
+    function renderMobileChart() {
+      const canvas = document.getElementById('mobileWaveCanvas');
+      if (!canvas) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      if (rect.width === 0) return;
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+      const W = rect.width;
+      const H = rect.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const isPaper = currentTheme === 'paper';
+      const colGreen = isPaper ? '#2f855a' : '#48bb78';
+      const colRed   = isPaper ? '#c53030' : '#e57373';
+      const colCyan  = isPaper ? '#2b6cb0' : '#63b3ed';
+      const colGold  = isPaper ? '#b7791f' : '#d6a33e';
+      const colPurp  = isPaper ? '#6b46c1' : '#a389f4';
+      const colText  = isPaper ? '#28313a' : '#e5ebf1';
+
+      const d = mobData[mobScenario];
+      const vis = d.candles.slice(0, Math.max(2, mobSimIdx));
+      const allP = [d.w0, d.w1, d.w2, d.sl, d.tp1, d.tp2, d.tp3];
+      vis.forEach(c => allP.push(c.h, c.l));
+      const minP = Math.min(...allP) * 0.996;
+      const maxP = Math.max(...allP) * 1.004;
+
+      const padL = 10, padR = 96, padT = 18, padB = 20;
+      const cW = W - padL - padR;
+      const cH = H - padT - padB;
+      const yOf = p => padT + cH * (1 - (p - minP) / (maxP - minP));
+      const xOf = i => padL + (i + 0.5) * (cW / d.candles.length);
+
+      // 눈이 편안한 골든존 음영 (0.382 ~ 0.618)
+      const f382 = mobScenario === 'bull' ? d.w1 - (d.w1 - d.w0) * 0.382 : d.w1 + (d.w0 - d.w1) * 0.382;
+      const f618 = mobScenario === 'bull' ? d.w1 - (d.w1 - d.w0) * 0.618 : d.w1 + (d.w0 - d.w1) * 0.618;
+      const gy = Math.min(yOf(f382), yOf(f618));
+      const gh = Math.abs(yOf(f618) - yOf(f382));
+      ctx.fillStyle = isPaper ? 'rgba(183,121,31,0.10)' : 'rgba(214,163,62,0.10)';
+      ctx.fillRect(padL, gy, cW, gh);
+
+      // 레벨 라인
+      const lines = [
+        {p: d.tp3, lbl: `TP3 $${d.tp3}`, col: colGold},
+        {p: d.tp2, lbl: `TP2 $${d.tp2}`, col: colCyan},
+        {p: d.tp1, lbl: `TP1 $${d.tp1}`, col: colGreen},
+        {p: d.be,  lbl: `본절 $${d.be}`, col: colPurp},
+        {p: d.sl,  lbl: `손절 $${d.sl}`, col: colRed}
+      ];
+      lines.forEach(ln => {
+        const y = yOf(ln.p);
+        ctx.strokeStyle = ln.col;
+        ctx.lineWidth = 1.1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(W - padR, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = ln.col;
+        ctx.font = 'bold 10px SFMono-Regular, monospace';
+        ctx.fillText(ln.lbl, W - padR + 4, y + 3);
+      });
+
+      // 캔들 렌더링
+      const bw = Math.max(5, (cW / d.candles.length) * 0.56);
+      vis.forEach((c, idx) => {
+        const cx = xOf(idx);
+        const bull = c.c >= c.o;
+        const col = bull ? colGreen : colRed;
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.moveTo(cx, yOf(c.h));
+        ctx.lineTo(cx, yOf(c.l));
+        ctx.stroke();
+
+        const ty = yOf(Math.max(c.o, c.c));
+        const by = yOf(Math.min(c.o, c.c));
+        ctx.fillStyle = col;
+        ctx.fillRect(cx - bw / 2, ty, bw, Math.max(2, by - ty));
+
+        if (c.tag) {
+          ctx.fillStyle = colText;
+          ctx.font = 'bold 9.5px sans-serif';
+          ctx.fillText(c.tag, Math.max(padL, cx - 18), bull ? yOf(c.h) - 6 : yOf(c.l) + 11);
+        }
+      });
+    }
+
+    function toggleMobileSim() {
+      const btn = document.getElementById('btnMobPlay');
+      if (mobTimer) {
+        clearInterval(mobTimer);
+        mobTimer = null;
+        btn.textContent = '▶ 파동 진행 재생';
+        return;
+      }
+      const d = mobData[mobScenario];
+      if (mobSimIdx >= d.candles.length) mobSimIdx = 2;
+      btn.textContent = '⏸ 일시정지';
+      mobTimer = setInterval(() => {
+        stepMobileSim();
+        if (mobSimIdx >= d.candles.length) {
+          clearInterval(mobTimer);
+          mobTimer = null;
+          btn.textContent = '▶ 파동 진행 재생';
+        }
+      }, 500);
+    }
+
+    function stepMobileSim() {
+      const d = mobData[mobScenario];
+      mobSimIdx = mobSimIdx < d.candles.length ? mobSimIdx + 1 : 2;
+      const cur = d.candles[mobSimIdx - 1];
+      document.getElementById('topLivePrice').textContent = '$' + cur.c.toLocaleString();
+      if (cur.tag) {
+        showToast(`🔔 ${cur.tag} ($${cur.c.toLocaleString()})`);
+        logMobEvent(`[파동 이벤트] ${cur.tag} 도달 (현재가: $${cur.c.toLocaleString()})`);
+      }
+      renderMobileChart();
+    }
+
+    function resetMobileSim() {
+      if (mobTimer) { clearInterval(mobTimer); mobTimer = null; }
+      document.getElementById('btnMobPlay').textContent = '▶ 파동 진행 재생';
+      mobSimIdx = 3;
+      renderMobileChart();
+      showToast('↺ 파동 초기 위치로 리셋됨');
+    }
+
+    function fireQuickAction(act) {
+      playSignalSound();
+      const d = mobData[mobScenario];
+      const qtyBtc = ((manualMarginUsdt * manualLeverage) / d.entry).toFixed(4);
+      if (act === 'OPEN_LONG') {
+        showToast(`🚀 [격리 ${manualLeverage}x · $${manualMarginUsdt}] LONG (${qtyBtc} BTC) 주문 전송!`);
+        logMobEvent(`[수동 배율·금액 진입] LONG ${qtyBtc} BTC (증거금 $${manualMarginUsdt}, ${manualLeverage}x) | 기점손절: $${d.sl}`);
+      } else if (act === 'OPEN_SHORT') {
+        showToast(`🔻 [격리 ${manualLeverage}x · $${manualMarginUsdt}] SHORT (${qtyBtc} BTC) 주문 전송!`);
+        logMobEvent(`[수동 배율·금액 진입] SHORT ${qtyBtc} BTC (증거금 $${manualMarginUsdt}, ${manualLeverage}x) | 기점손절: $${d.sl}`);
+      } else if (act === 'BREAKEVEN') {
+        showToast('🛡️ 잔여 물량 손절가를 본절+0.15%로 상향 이동!');
+        logMobEvent('[무위험 전환] 손절가를 본절+수수료 버퍼 위치로 이동 완료 (손실 확률 0%)');
+      } else {
+        showToast('💰 보유 포지션 50% 시장가 분할 익절 완료!');
+        logMobEvent('[분할 익절] 현재가 기준 포지션 50% 수익 확정 완료');
+      }
+    }
+
+    // =========================================================================
+    // 기점 가격 & 수동 배율·금액 계산기
+    // =========================================================================
+    function setCalcDir(dir) {
+      mobCalcDir = dir;
+      document.getElementById('btnCalcLong').classList.toggle('active', dir === 'long');
+      document.getElementById('btnCalcShort').classList.toggle('active', dir === 'short');
+      if (dir === 'long') {
+        document.getElementById('mInW0').value = 66200;
+        document.getElementById('mInW1').value = 68600;
+        document.getElementById('mInW2').value = 67250;
+        document.getElementById('mInEntry').value = 67450;
+      } else {
+        document.getElementById('mInW0').value = 69600;
+        document.getElementById('mInW1').value = 67400;
+        document.getElementById('mInW2').value = 68650;
+        document.getElementById('mInEntry').value = 68400;
+      }
+      calcMobileOrigin();
+    }
+
+    function adjVal(id, delta) {
+      const el = document.getElementById(id);
+      el.value = (parseFloat(el.value) || 0) + delta;
+      calcMobileOrigin();
+    }
+
+    function calcMobileOrigin() {
+      const w0 = parseFloat(document.getElementById('mInW0').value) || 0;
+      const w1 = parseFloat(document.getElementById('mInW1').value) || 0;
+      const w2 = parseFloat(document.getElementById('mInW2').value) || 0;
+      const entry = parseFloat(document.getElementById('mInEntry').value) || 0;
+      const eq = parseFloat(document.getElementById('mInEquity').value) || 10000;
+      const riskPct = parseFloat(document.getElementById('mInRisk').value) || 1.0;
+
+      const w1Len = Math.abs(w1 - w0);
+      if (w1Len <= 0 || entry <= 0) return;
+
+      const violated = (mobCalcDir === 'long' && w2 <= w0) || (mobCalcDir === 'short' && w2 >= w0);
+      const ret = mobCalcDir === 'long' ? (w1 - w2) / w1Len : (w2 - w1) / w1Len;
+      const badge = document.getElementById('mCalcRuleBadge');
+
+      if (violated) {
+        badge.className = 'pill pill-red';
+        badge.textContent = '❌ 1파 기점 침범 (진입금지)';
+      } else {
+        badge.className = 'pill pill-green';
+        badge.textContent = `✅ 되돌림 ${(ret * 100).toFixed(1)}% (유효)`;
+      }
+
+      const sl = mobCalcDir === 'long' ? Math.min(w2, w0) * 0.9985 : Math.max(w2, w0) * 1.0015;
+      const stopDist = Math.abs(entry - sl);
+
+      let qty = 0;
+      let usedMargin = manualMarginUsdt;
+      if (mobSizingMode === 'manual') {
+        qty = (manualMarginUsdt * manualLeverage) / entry;
+      } else {
+        const targetLoss = eq * (riskPct / 100);
+        qty = Math.min(targetLoss / Math.max(stopDist, 1), (eq * manualLeverage * 0.95) / entry);
+        usedMargin = (qty * entry) / manualLeverage;
+      }
+
+      const actualLoss = stopDist * qty;
+      const be = mobCalcDir === 'long' ? entry * 1.0015 : entry * 0.9985;
+      const tp1 = mobCalcDir === 'long' ? Math.max(w1, entry + stopDist * 1.5) : Math.min(w1, entry - stopDist * 1.5);
+      const tp2 = mobCalcDir === 'long' ? w2 + w1Len * 1.618 : w2 - w1Len * 1.618;
+      const tp3 = mobCalcDir === 'long' ? w2 + w1Len * 2.618 : w2 - w1Len * 2.618;
+
+      const expProfit = Math.abs(tp1 - entry) * qty * 0.4 + Math.abs(tp2 - entry) * qty * 0.3 + Math.abs(tp3 - entry) * qty * 0.3;
+
+      document.getElementById('mCalcResultCard').innerHTML = `
+        <div class="m-card-head">
+          <div class="m-card-title">📌 산출된 주문 세팅 (${mobSizingMode === 'manual' ? '수동 금액·배율' : '자동 리스크'})</div>
+          <span class="pill pill-cyan">${manualLeverage}x · ${qty.toFixed(4)} BTC</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-sub); margin-bottom:10px; line-height:1.6;">
+          • 투입 증거금: <strong>$${usedMargin.toFixed(1)} USDT</strong> (총 포지션 규모: <strong>$${(qty * entry).toFixed(0)} USDT</strong>)<br/>
+          • 기점 손절 시 예상 손실: <strong class="c-red">-$${actualLoss.toFixed(1)} USDT</strong><br/>
+          • 1~3차 완주 시 기대 수익: <strong class="c-green">+$${expProfit.toFixed(1)} USDT (+${(expProfit / Math.max(actualLoss, 1)).toFixed(2)}R)</strong>
+        </div>
+        <div class="m-level-row" style="border-left-color:var(--gold);"><span>TP3 (30% · 2.618 확장)</span><strong class="mono c-gold">$${tp3.toFixed(1)}</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--cyan);"><span>TP2 (30% · 1.618 확장)</span><strong class="mono c-cyan">$${tp2.toFixed(1)}</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--green);"><span>TP1 (40% · 본절이동 트리거)</span><strong class="mono c-green">$${tp1.toFixed(1)}</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--purple);"><span>본절 스탑선 (Breakeven)</span><strong class="mono c-purple">$${be.toFixed(1)}</strong></div>
+        <div class="m-level-row" style="border-left-color:var(--red);"><span>기점 손절가 (Origin SL)</span><strong class="mono c-red">$${sl.toFixed(1)}</strong></div>
+        <button class="m-btn m-btn-green" style="width:100%; margin-top:6px;" onclick="fireQuickAction('${mobCalcDir === 'long' ? 'OPEN_LONG' : 'OPEN_SHORT'}')">🚀 [${manualLeverage}x · $${usedMargin.toFixed(0)}] 비트겟 주문 전송 (${qty.toFixed(4)} BTC)</button>
+      `;
+    }
+
+    // =========================================================================
+    // 비트겟 API 저장 & 웹훅 JSON 생성기
+    // =========================================================================
+    function saveMobileApiKeys() {
+      try {
+        localStorage.setItem('bg_api_key', document.getElementById('mApiKey').value);
+      } catch (e) {}
+      showToast('💾 기기 내 보안 저장소에 API 설정이 저장되었습니다.');
+      logMobEvent('[보안 설정] 비트겟 V2 선물 API 키가 모바일 로컬 스토리지에 저장되었습니다.');
+    }
+
+    function copyTextSafe(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    function getWebhookPayloadObject() {
+      const d = mobData[mobScenario];
+      const qtyBtc = Number(((manualMarginUsdt * manualLeverage) / d.entry).toFixed(4));
+      return {
+        secret: "BITGET_SECRET_TOKEN_2026",
+        exchange: "bitget_v2_mix",
+        productType: "USDT-FUTURES",
+        marginMode: "isolated",
+        symbol: "BTCUSDT",
+        strategyMode: mobMode,
+        leverage: manualLeverage,
+        marginUsdt: manualMarginUsdt,
+        action: mobScenario === 'bull' ? "OPEN_LONG" : "OPEN_SHORT",
+        entryPrice: d.entry,
+        originStopLoss: d.sl,
+        autoBreakevenTrigger: d.tp1,
+        autoBreakevenStop: d.be,
+        takeProfitTargets: [
+          { step: 1, price: d.tp1, ratioPct: 40 },
+          { step: 2, price: d.tp2, ratioPct: 30 },
+          { step: 3, price: d.tp3, ratioPct: 30 }
+        ],
+        orderQtyBtc: qtyBtc
+      };
+    }
+
+    function updateWebhookPreview() {
+      const previewEl = document.getElementById('webhookJsonPreview');
+      const badgeEl = document.getElementById('webhookPreviewBadge');
+      if (!previewEl) return;
+      const payload = getWebhookPayloadObject();
+      previewEl.textContent = JSON.stringify(payload, null, 2);
+      if (badgeEl) {
+        badgeEl.textContent = `${manualLeverage}x · $${manualMarginUsdt} (${payload.orderQtyBtc} BTC)`;
+      }
+    }
+
+    function copyMobileWebhook() {
+      const payload = getWebhookPayloadObject();
+      copyTextSafe(JSON.stringify(payload, null, 2));
+      showToast(`📋 웹훅 JSON 복사됨 (${manualLeverage}x · $${manualMarginUsdt} · ${payload.orderQtyBtc} BTC)`);
+    }
+
+    // =========================================================================
+    // ★ 앱 제작 & 안드로이드 APK 패키징 빌더 엔진
+    // =========================================================================
+    function drawCustomAppIcon() {
+      const canvas = document.getElementById('appIconCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+
+      // 배경 그라데이션
+      const grad = ctx.createLinearGradient(0, 0, W, H);
+      grad.addColorStop(0, '#2b6cb0');
+      grad.addColorStop(1, '#2f855a');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, W, H, 22);
+      ctx.fill();
+
+      // 엘리어트 1-2-3 파동 라인 심볼
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(14, 72);
+      ctx.lineTo(36, 42);
+      ctx.lineTo(52, 58);
+      ctx.lineTo(82, 20);
+      ctx.stroke();
+
+      // 중앙 BG 텍스트
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 32px -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('BG', W / 2, H / 2 + 10);
+    }
+
+    function downloadAppIconPng() {
+      drawCustomAppIcon();
+      const canvas = document.getElementById('appIconCanvas');
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'icon-512.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('🖼️ 앱 아이콘(icon-512.png) 다운로드 완료!');
+      });
+    }
+
+    function getManifestObject() {
+      const appName = (document.getElementById('apkAppName')?.value || 'BG파동봇 Fold').trim();
+      const orientation = document.getElementById('apkOrientation')?.value || 'any';
+      return {
+        name: `${appName} - 다우·엘리어트 기점 자동매매`,
+        short_name: appName,
+        description: "갤럭시 Z 폴드 SE 맞춤 다우 구조 & 엘리어트 기점 자동매매 및 4단계 본절 방어 앱",
+        start_url: "./index.html",
+        scope: "./",
+        display: "standalone",
+        display_override: ["window-controls-overlay", "standalone"],
+        orientation: orientation,
+        background_color: "#1c222b",
+        theme_color: "#1c222b",
+        icons: [
+          {
+            src: "icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable"
+          }
+        ]
+      };
+    }
+
+    function getCapacitorConfigObject() {
+      const appName = (document.getElementById('apkAppName')?.value || 'BG파동봇 Fold').trim();
+      const appId = (document.getElementById('apkPackageId')?.value || 'com.bgwavebot.foldse').trim();
+      return {
+        appId: appId,
+        appName: appName,
+        webDir: "www",
+        bundledWebRuntime: false,
+        android: {
+          allowMixedContent: true,
+          backgroundColor: "#1c222b"
+        },
+        plugins: {
+          SplashScreen: {
+            launchShowDuration: 1200,
+            backgroundColor: "#1c222b",
+            showSpinner: false
+          }
+        }
+      };
+    }
+
+    function updateAppBuilderConfig() {
+      const appName = (document.getElementById('apkAppName')?.value || 'BG파동봇 Fold').trim();
+      const appId = (document.getElementById('apkPackageId')?.value || 'com.bgwavebot.foldse').trim();
+      const titleEl = document.getElementById('previewIconTitle');
+      if (titleEl) titleEl.textContent = `${appName} (${appId})`;
+
+      const codeBox = document.getElementById('apkBuilderCodeBox');
+      if (!codeBox) return;
+
+      const cliScript = `# === [갤럭시 Z 폴드 SE 전용 Android APK 빌드 명령어] ===
+mkdir bg-wave-fold-app && cd bg-wave-fold-app
+npm init -y
+npm install @capacitor/core @capacitor/cli @capacitor/android
+
+# www 폴더 생성 후 다운로드한 index.html, manifest.json, sw.js 이동
+mkdir www
+# (다운로드한 index.html 파일을 www/index.html 로 복사)
+
+npx cap add android
+npx cap sync android
+
+# Android Studio 열기 -> Build > Build Bundle(s) / APK(s) > Build APK(s) 클릭!
+npx cap open android
+
+# === [manifest.json 미리보기] ===
+${JSON.stringify(getManifestObject(), null, 2)}`;
+
+      codeBox.textContent = cliScript;
+    }
+
+    function copyBuilderCode() {
+      const codeBox = document.getElementById('apkBuilderCodeBox');
+      if (!codeBox) return;
+      copyTextSafe(codeBox.textContent);
+      showToast('📋 APK 빌드 명령어 및 설정 코드가 복사되었습니다!');
+    }
+
+    function downloadFileBlob(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadStandaloneHtml() {
+      const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+      downloadFileBlob('index.html', htmlContent, 'text/html;charset=utf-8');
+      showToast('📥 단독 실행 앱(index.html) 다운로드가 시작되었습니다!');
+      logMobEvent('[앱 패키지 생성] 갤럭시 폴드 SE용 단독 index.html 앱 파일이 저장되었습니다.');
+    }
+
+    function downloadManifestJson() {
+      const manifestStr = JSON.stringify(getManifestObject(), null, 2);
+      downloadFileBlob('manifest.json', manifestStr, 'application/json;charset=utf-8');
+      showToast('📥 PWA 매니페스트(manifest.json) 다운로드 완료!');
+    }
+
+    function downloadServiceWorkerJs() {
+      const swCode = `const CACHE_NAME = 'bg-wave-fold-v2.4';
+const ASSETS = ['./', './index.html', './manifest.json'];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cached) => cached || fetch(event.request))
+  );
+});`;
+      downloadFileBlob('sw.js', swCode, 'application/javascript;charset=utf-8');
+      showToast('📥 오프라인 서비스워커(sw.js) 다운로드 완료!');
+    }
+
+    function downloadCapacitorConfig() {
+      const capStr = JSON.stringify(getCapacitorConfigObject(), null, 2);
+      downloadFileBlob('capacitor.config.json', capStr, 'application/json;charset=utf-8');
+      showToast('📥 안드로이드 APK 설정(capacitor.config.json) 다운로드 완료!');
+    }
+
+    // =========================================================================
+    // 사운드 합성 및 이벤트 로그
+    // =========================================================================
+    function playSignalSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(740, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.14);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.26);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.26);
+      } catch (e) {}
+    }
+
+    function logMobEvent(txt) {
+      const list = document.getElementById('mLogList');
+      if (!list) return;
+      const t = new Date().toTimeString().split(' ')[0];
+      const item = document.createElement('div');
+      item.style.padding = '6px 0';
+      item.style.borderBottom = '1px dashed var(--border)';
+      item.innerHTML = `<span class="mono" style="color:var(--cyan);">[${t}]</span> ${txt}`;
+      list.prepend(item);
+    }
+
+    window.addEventListener('resize', renderMobileChart);
+    window.addEventListener('DOMContentLoaded', () => {
+      updateManualTradeSummary();
+      calcMobileOrigin();
+      updateWebhookPreview();
+      drawCustomAppIcon();
+      updateAppBuilderConfig();
+      logMobEvent('[갤럭시 Z 폴드 SE 모드] 8.0인치 듀얼뷰 및 눈보호 세이지 컬러 테마가 활성화되었습니다.');
+      logMobEvent('[수동 조절 활성] 레버리지 배율(1x~125x)과 투입 금액(USDT)을 자유롭게 조절할 수 있습니다.');
+      logMobEvent('[앱 빌더 준비 완료] 하단 [📲 앱제작·APK] 탭에서 정식 앱 설치 파일 및 APK 패키지를 추출할 수 있습니다.');
+      renderMobileChart();
+    });
+  </script>
+
+</body></html>
